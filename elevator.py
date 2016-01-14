@@ -20,6 +20,8 @@ class ElevatorLogic(object):
         # Feel free to add any instance variables you want.
         self.destination_floor = None
         self.callbacks = None
+        self.up_floors = set()
+        self.down_floors = set()
 
     def on_called(self, floor, direction):
         """
@@ -30,7 +32,11 @@ class ElevatorLogic(object):
         floor: the floor that the elevator is being called to
         direction: the direction the caller wants to go, up or down
         """
-        self.destination_floor = floor
+        if self.callbacks.current_floor < floor:
+            self.up_floors.add(floor)
+        elif self.callbacks.current_floor > floor:
+            self.down_floors.add(floor)
+
 
     def on_floor_selected(self, floor):
         """
@@ -40,7 +46,13 @@ class ElevatorLogic(object):
 
         floor: the floor that was requested
         """
-        self.destination_floor = floor
+        if self.callbacks.motor_direction == UP:
+            if floor < self.callbacks.current_floor:
+            if floor > self.callbacks.current_floor:
+                self.up_floors.add(floor)
+        elif self.callbacks.motor_direction == DOWN:
+            if floor < self.callbacks.current_floor:
+            if floor > self.callbacks.current_floor:
 
     def on_floor_changed(self):
         """
@@ -48,6 +60,8 @@ class ElevatorLogic(object):
         You should decide whether or not you want to stop the elevator.
         """
         if self.destination_floor == self.callbacks.current_floor:
+            self.up_floors.remove(self.callbacks.current_floor)
+            self.down_floors.remove(self.callbacks.current_floor)
             self.callbacks.motor_direction = None
 
     def on_ready(self):
